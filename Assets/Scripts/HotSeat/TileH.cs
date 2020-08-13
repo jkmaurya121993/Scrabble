@@ -104,7 +104,7 @@ public class TileH : MonoBehaviour, IDropHandler, IPointerClickHandler
         }
         HasLetter = false;
         if (parent.CurrentPlayer == 1)
-            parent.Player1.ChangeBox(1, CurrentLetter.text);
+            parent.Player.ChangeBox(1, CurrentLetter.text);
        // else parent.Player2.ChangeBox(1, CurrentLetter.text);
         CurrentLetter.text = "";
         parent.CurrentTiles.Remove(this);

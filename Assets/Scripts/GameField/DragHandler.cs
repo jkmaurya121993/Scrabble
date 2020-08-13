@@ -17,9 +17,9 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             {
                 ObjectDragged.GetComponent<LetterH>().Fix();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-               // ObjectDragged.GetComponent<LetterLAN>().Fix();
+                Debug.Log(e.Message);
             }
         }
         ObjectDragged = gameObject;

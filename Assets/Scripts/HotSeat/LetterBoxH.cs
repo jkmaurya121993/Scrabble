@@ -47,8 +47,7 @@ public class LetterBoxH : MonoBehaviour
 
     public List<Vector3> FreeCoordinates;
     public List<LetterH> CurrentLetters;
-    public int Score = 0;
-    public Button ChangeLetterButton;
+    public int Score = 0;  
     public LetterH LetterHPrefab;
     public bool CanChangeLetters = true;
     public byte NumberOfLetters = 12;
@@ -59,7 +58,7 @@ public class LetterBoxH : MonoBehaviour
     private float _xOffset = 0;
     private FieldH _currentFieldH;
 
-    public Text NumberOfLettersText;//for testing only
+   // public Text NumberOfLettersText;//for testing only
 
     private void Start()
     {
@@ -86,8 +85,8 @@ public class LetterBoxH : MonoBehaviour
     {
         if (_allLetters == null || _allLetters.Count == 0)
             CanChangeLetters = false;
-        else CanChangeLetters = _currentFieldH.CurrentTiles.Count == 0;
-        ChangeLetterButton.interactable = CanChangeLetters;
+        //else CanChangeLetters = _currentFieldH.CurrentTiles.Count == 0;
+        //ChangeLetterButton.interactable = CanChangeLetters;
     }
 
     //Clean _allLetters when exiting to main menu
@@ -128,7 +127,7 @@ public class LetterBoxH : MonoBehaviour
                 FreeCoordinates.RemoveAt(FreeCoordinates.Count - 1);
             }
         }
-        NumberOfLettersText.text = _allLetters.Count.ToString();
+       // NumberOfLettersText.text = _allLetters.Count.ToString();
     }
 
     //Crates new LetterH on field

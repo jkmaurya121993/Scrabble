@@ -16,39 +16,46 @@ public class FieldH : MonoBehaviour
     }
 
     #region Prefabs and materials
-
-    public TileH TileHPrefab;
-    public Material StandardMaterial;
-    public Material StartMaterial;
+    [SerializeField]
+    private TileH TileHPrefab;
+    [SerializeField]
+    private Material StandardMaterial;
+    [SerializeField]
+    private Material StartMaterial;
    
     #endregion Prefabs and materials
 
-    public GameObject TimerImage;
-    public Text TimerText;
-    public Text Player1Text;
-  //6  public Text Player2Text;
-    public GameObject EndGameCanvas;
+    [SerializeField]
+   private Text Player1Text;
+   // [SerializeField]
+    //private GameObject EndGameCanvas;
+    [SerializeField]
     public UIController Controller;
-    public Button SkipTurnButton;
-
-    public UIGrid FieldGrid;
+   
+    [SerializeField]
+    private UIGrid FieldGrid;
+   
     public Direction CurrentDirection = Direction.None;
+    [SerializeField]
     public int CurrentTurn = 1;
+   
     public bool isFirstTurn = true;
+    [SerializeField]
     public byte NumberOfRows = 12;
+    [SerializeField]
     public byte NumberOfColumns = 12;
-    public LetterBoxH Player1;
-   // public LetterBoxH Player2;
+  
+    public LetterBoxH Player;
+    [SerializeField]
     public byte CurrentPlayer = 1;
+   
     public TileH[,] Field;
+   
     public List<TileH> CurrentTiles;
 
-    private int _turnsSkipped = 0;
+ 
     private SqliteConnection _dbConnection;
-    private List<TileH> _wordsFound;
-    //private bool _timerEnabled;
-   // private int _timerLength;
-    //private float _timeRemaining;
+    private List<TileH> _wordsFound;   
     private List<TileH> _asterixTiles = new List<TileH>();
 
     private void Start()
@@ -62,16 +69,13 @@ public class FieldH : MonoBehaviour
        
         FieldGrid.Initialize();
         var letterSize = FieldGrid.Items[0, 0].gameObject.GetComponent<RectTransform>().rect.width;
-        Player1.LetterSize = new Vector2(letterSize, letterSize);
-       // Player2.LetterSize = new Vector2(letterSize, letterSize);
-        CreateField();
-    
+        Player.LetterSize = new Vector2(letterSize, letterSize);
+      
+        CreateField();    
     }
 
     private void Update()
-    {
-        if (SkipTurnButton.interactable != (CurrentTiles.Count == 0))
-            SkipTurnButton.interactable = CurrentTiles.Count == 0;
+    {      
         if (Input.GetKeyDown(KeyCode.A))
             EndGame(null);      
     }
@@ -79,6 +83,7 @@ public class FieldH : MonoBehaviour
     private void CreateField()
     {
         Field = new TileH[NumberOfRows, NumberOfColumns];
+        Color standardColor = new Color(0, 0.8f, 0);
         for (var i = 0; i < NumberOfRows; i++)
         {
             for (var j = 0; j < NumberOfColumns; j++)
@@ -86,16 +91,18 @@ public class FieldH : MonoBehaviour
                 var newTile = Instantiate(TileHPrefab);
                 newTile.transform.SetParent(gameObject.transform);
                 newTile.Column = j;
-                var render = newTile.GetComponent<Image>();
-                render.material = StandardMaterial;
+                // var render = newTile.GetComponent<Image>();
+                newTile.GetComponent<Image>().color = standardColor;
+                // render.material = StandardMaterial;
                 newTile.Row = i;
                 Field[i, j] = newTile;
                 FieldGrid.AddElement(i, j, newTile.gameObject);
             }
         }
         Field[5, 5].CanDrop = true;
-        Field[5, 5].GetComponent<Image>().material = StartMaterial;
-      
+        //  Field[5, 5].GetComponent<Image>().material = StartMaterial;
+        Field[5, 5].GetComponent<Image>().color = new Color(1,0,0);
+
     }
 
     #region Field generation
@@ -105,52 +112,32 @@ public class FieldH : MonoBehaviour
    
     #endregion Field generation
 
-    private void OnEndTimer()
-    {
-       
-        OnEndTurn();
-        OnRemoveAll();
-        OnSkipTurn();
-    }
-
     public void OnEndTurn()
     {
         if (CurrentTiles.Count > 0)
         {
             if (CheckWords())
             {
-                _turnsSkipped = 0;
+             
                 CurrentTurn++;
                 var points = CountPoints();
                
                 
-                    Player1.ChangeBox(Player1.NumberOfLetters - Player1.CurrentLetters.Count);
-                    Player1.Score += points;
-                    if (Player1.CurrentLetters.Count == 0)
+                    Player.ChangeBox(Player.NumberOfLetters - Player.CurrentLetters.Count);
+                    Player.Score += points;
+                    if (Player.CurrentLetters.Count == 0)
                     {
-                        EndGame(Player1);
+                        EndGame(Player);
                     }                 
                     CurrentTiles.Clear();
                     CurrentDirection = Direction.None;                
-                    Controller.InvalidatePlayer(1, Player1.Score);             
+                    Controller.InvalidatePlayer( Player.Score);             
             }
             else Controller.ShowNotExistError();
         }
         else Controller.ShowZeroTilesError();
         _wordsFound = new List<TileH>();
-    }
-
-    public void OnSkipTurn()
-    {
-        OnRemoveAll();
-        CurrentDirection = Direction.None;
-        Player1.ChangeBox(12 - Player1.CurrentLetters.Count);        
-            Controller.InvalidatePlayer(1, Player1.Score);
-        
-       
-        if (++_turnsSkipped == 4)
-            EndGame(null);
-    }
+    }  
 
     public void OnRemoveAll()
     {
@@ -428,13 +415,13 @@ public class FieldH : MonoBehaviour
 
     private void EndGame(LetterBoxH playerOut)//Player, who ran out of letters is passed
     {
-        var tempPoints = Player1.RemovePoints();
+        var tempPoints = Player.RemovePoints();
       //  tempPoints += Player2.RemovePoints();
         if (playerOut != null)
         {
             playerOut.Score += tempPoints;
         }
-        var winner = Player1.Score;
-        Controller.SetWinner(winner, Player1.Score, 0, Player1Text.text, "");
+        var winner = Player.Score;
+     //   Controller.SetWinner(winner, Player.Score, 0, Player1Text.text, "");
     }
 }
