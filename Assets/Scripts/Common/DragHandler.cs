@@ -19,7 +19,9 @@ public class DragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             }
             catch (Exception e)
             {
+                #if DEBUG_LOG
                 Debug.Log(e.Message);
+                #endif
             }
         }
         ObjectDragged = gameObject;

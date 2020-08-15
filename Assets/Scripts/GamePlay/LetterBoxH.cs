@@ -57,11 +57,12 @@ public class LetterBoxH : MonoBehaviour
     private Vector3 _pos;
     private float _xOffset = 0;
     private FieldH _currentFieldH;
-
+    
    // public Text NumberOfLettersText;//for testing only
 
     private void Start()
     {
+        
         if (_allLetters == null)
             _allLetters = new List<string>
     {
@@ -69,14 +70,23 @@ public class LetterBoxH : MonoBehaviour
         "V","W","X","Y","Z"
     };
         CurrentLetters = new List<LetterH>();
+
         _allLetters = _allLetters.OrderBy(letter => letter).ToList();
+
         FreeCoordinates = new List<Vector3>();
+
         _currentFieldH = GameObject.FindGameObjectWithTag("Field").GetComponent<FieldH>();
+
         DistanceBetweenLetters = LetterSize.x;
+
         LetterHPrefab.gameObject.GetComponent<RectTransform>().sizeDelta = LetterSize;
+
         _xOffset = gameObject.transform.position.x - 2 * DistanceBetweenLetters;
+
         var yOffset = gameObject.transform.position.y + DistanceBetweenLetters;
+
         _pos = new Vector3(_xOffset, yOffset);
+
         ChangeBox(NumberOfLetters);
     }
 
@@ -85,18 +95,7 @@ public class LetterBoxH : MonoBehaviour
     {
         if (_allLetters == null || _allLetters.Count == 0)
             CanChangeLetters = false;
-        //else CanChangeLetters = _currentFieldH.CurrentTiles.Count == 0;
-        //ChangeLetterButton.interactable = CanChangeLetters;
-    }
-
-    //Clean _allLetters when exiting to main menu
-    private void OnDisable()
-    {
-        if (PlayerPrefs.GetInt("Exiting", 0) == 1)
-        {
-            PlayerPrefs.SetInt("Exiting", 0);
-            _allLetters = null;
-        }
+        
     }
 
     //Adds letters to the hand of player
@@ -111,10 +110,13 @@ public class LetterBoxH : MonoBehaviour
             for (var i = 0; i < numberOfLetters; i++)
             {
                 AddLetter(_pos, letter);
+
                 _pos.x += DistanceBetweenLetters;
+
                 if (i % 4 == 3)
                 {
                     _pos.x = _xOffset;
+
                     _pos.y -= DistanceBetweenLetters;
                 }
             }
@@ -124,10 +126,11 @@ public class LetterBoxH : MonoBehaviour
             for (var j = 0; j < numberOfLetters; j++)
             {
                 AddLetter(FreeCoordinates[FreeCoordinates.Count - 1], letter);
+
                 FreeCoordinates.RemoveAt(FreeCoordinates.Count - 1);
             }
         }
-       // NumberOfLettersText.text = _allLetters.Count.ToString();
+       
     }
 
     //Crates new LetterH on field
@@ -135,17 +138,23 @@ public class LetterBoxH : MonoBehaviour
     {
         var newLetter = Instantiate(LetterHPrefab, position,
             transform.rotation) as LetterH;
+
         newLetter.transform.SetParent(gameObject.transform);
+
         if (String.IsNullOrEmpty(letter))//if letter is returned from Field
         {
             var current = _allLetters[UnityEngine.Random.Range(0, _allLetters.Count)];
+
             newLetter.ChangeLetter(current);
+
             _allLetters.Remove(current);
+
             CurrentLetters.Add(newLetter);
         }
         else//if new letter is created
         {
             newLetter.ChangeLetter(letter);
+
             CurrentLetters.Add(newLetter);
         }
     }
@@ -153,16 +162,22 @@ public class LetterBoxH : MonoBehaviour
     //Removes letter from hand when it is dropped on grid
     public void RemoveLetter()
     {
-        var currentObject = DragHandler.ObjectDragged.GetComponent<LetterH>();
-        var currentIndex = FindIndex(currentObject);
-        var previousCoordinates = DragHandler.StartPosition;
-        for (var j = currentIndex + 1; j < CurrentLetters.Count; j++)//shifts all letters
+        LetterH currentObject = DragHandler.ObjectDragged.GetComponent<LetterH>();
+
+        int currentIndex = FindIndex(currentObject);
+
+        Vector3 previousCoordinates = DragHandler.StartPosition;
+
+        for (int j = currentIndex + 1; j < CurrentLetters.Count; j++)//shifts all letters
         {
-            var tempCoordinates = CurrentLetters[j].gameObject.transform.position;
+            Vector3 tempCoordinates = CurrentLetters[j].gameObject.transform.position;
+
             CurrentLetters[j].gameObject.transform.position = previousCoordinates;
+
             previousCoordinates = tempCoordinates;
         }
         FreeCoordinates.Add(previousCoordinates);
+
         CurrentLetters.Remove(currentObject);
     }
 
@@ -174,12 +189,16 @@ public class LetterBoxH : MonoBehaviour
         {
             if (t.isChecked)
             {
-                var text = t.LetterText.text;
+                string text = t.LetterText.text;
+
                 t.LetterText.text = _allLetters[UnityEngine.Random.Range(0, _allLetters.Count)];
+
                 _allLetters.Add(text);
+
                 _allLetters.Remove(t.LetterText.text);
+
                 t.isChecked = false;
-                t.gameObject.GetComponent<Image>().material = t.StandardMaterial;
+
                 successful = true;
             }
         }
@@ -189,7 +208,7 @@ public class LetterBoxH : MonoBehaviour
     //Finds the index of LetterH in CurrentLetters
     public int FindIndex(LetterH input)
     {
-        var j = 0;
+        int j = 0;
         for (; j < CurrentLetters.Count; j++)
         {
             if (CurrentLetters[j] == input)
@@ -198,17 +217,4 @@ public class LetterBoxH : MonoBehaviour
         return -1;
     }
 
-    //Called in endgame to remove points from final score for each letter left
-    //Returns sum of points deleted
-    public int RemovePoints()
-    {
-        var result = 0;
-        _allLetters = null;
-        foreach (var letter in CurrentLetters)
-        {
-            result += PointsDictionary[letter.LetterText.text];
-        }
-        Score -= result;
-        return result;
-    }
 }

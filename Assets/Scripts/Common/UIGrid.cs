@@ -13,10 +13,10 @@ public class UIGrid : MonoBehaviour
     {
         IsIntialized = true;
         Items = new GameObject[RowCount, ColCount];
-        var gridSize = GetComponent<RectTransform>().rect;
-        var xSize = gridSize.width / ColCount * gameObject.transform.lossyScale.x;
-        var ySize = gridSize.height / RowCount * gameObject.transform.lossyScale.y;
-        var cellTransform = CellPrefab.gameObject.GetComponent<RectTransform>();
+        Rect gridSize = GetComponent<RectTransform>().rect;
+        float xSize = gridSize.width / ColCount * gameObject.transform.lossyScale.x;
+        float ySize = gridSize.height / RowCount * gameObject.transform.lossyScale.y;
+        RectTransform cellTransform = CellPrefab.gameObject.GetComponent<RectTransform>();
         if (IsSquare)
         {
             if (xSize > ySize)
@@ -24,13 +24,13 @@ public class UIGrid : MonoBehaviour
             else ySize = xSize;
         }
         cellTransform.sizeDelta = new Vector2(xSize, ySize);
-        var xStart = transform.position.x + (cellTransform.rect.width - ColCount * xSize) / 2;
-        var curPosition = new Vector3(xStart, transform.position.y + (cellTransform.rect.height - RowCount * ySize) / 2);
-        for (var i = 0; i < RowCount; i++)
+        float xStart = transform.position.x + (cellTransform.rect.width - ColCount * xSize) / 2;
+        Vector3 curPosition = new Vector3(xStart, transform.position.y + (cellTransform.rect.height - RowCount * ySize) / 2);
+        for (byte i = 0; i < RowCount; i++)
         {
-            for (var j = 0; j < ColCount; j++)
+            for (byte j = 0; j < ColCount; j++)
             {
-                var curCell = Instantiate(CellPrefab);
+                GameObject curCell = Instantiate(CellPrefab);
                 curCell.transform.SetParent(gameObject.transform);
                 curCell.transform.position = curPosition;
                 Items[i, j] = curCell;
@@ -67,8 +67,8 @@ public class UIGrid : MonoBehaviour
             (Items[upperRow, upperColumn].transform.position.y + Items[lowerRow, lowerColumn].transform.position.y) / 2);
         if (preserveSize)
             return;
-        var ySize = (upperRow - lowerRow + 1) * Items[0, 0].GetComponent<RectTransform>().rect.height * (1 - padding);
-        var xSize = (lowerColumn - upperColumn + 1) * Items[0, 0].GetComponent<RectTransform>().rect.width * (1 - padding);
+        float ySize = (upperRow - lowerRow + 1) * Items[0, 0].GetComponent<RectTransform>().rect.height * (1 - padding);
+        float xSize = (lowerColumn - upperColumn + 1) * Items[0, 0].GetComponent<RectTransform>().rect.width * (1 - padding);
         if (isSquare)
         {
             if (xSize < ySize)

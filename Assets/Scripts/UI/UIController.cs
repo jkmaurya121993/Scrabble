@@ -6,10 +6,7 @@ public class UIController : MonoBehaviour
 {
     //Score of player
     [SerializeField]
-    private Text PlayerText;
-    //public Material PlayerGlowMaterial;
-   // public Material PlayerIdleMaterial;
-
+    private Text PlayerText;   
     //Error 
     [SerializeField]
     private Text NotExistText;
@@ -28,19 +25,8 @@ public class UIController : MonoBehaviour
    [SerializeField]
     private Button ReturnAllButton;
 
-    //Endgame fields
-   // [SerializeField]
-   // private Canvas EndGameCanvas;
-   // [SerializeField]
-   // private Text Player1Points;
-   // [SerializeField]
-   // private Text Player1Name;
-   //[SerializeField]
-   // private Text Winner;
-
-    private static GameObject _currentObject;
+    private  GameObject _currentObject;
  
-
     private void Start()
     {
         _currentObject = StartText.gameObject;
@@ -91,30 +77,5 @@ public class UIController : MonoBehaviour
         _currentObject.SetActive(true);
     }
 
-    #endregion Error showing
-
-    #region Button activation  
-    public void SetNextButtonActive(bool active)
-    {
-      
-        {
-            NextTurnButton.interactable = active;
-            ReturnAllButton.interactable = active;
-        }
-    }
-
-    #endregion Button activation
-
-    //Creates endgame field with player names and scores
-    //public void SetWinner(int winner, int player1Score, int player2Score, string player1Name, string player2Name)
-    //{
-    //    GameObject.FindGameObjectWithTag("Pause").GetComponent<PauseBehaviour>().GameOver = true;
-    //    EndGameCanvas.gameObject.SetActive(true);
-    //    if (winner == 1)
-    //        Winner.text = player1Name;
-    //    else Winner.text = player2Name;
-    //    Player1Name.text = player1Name;
-    //    Player1Points.text = player1Score.ToString();       
-    //    gameObject.GetComponent<Canvas>().enabled = false;
-    //}
+    #endregion Error showing     
 }

@@ -6,19 +6,23 @@ using UnityEngine.UI;
 
 public class TileH : MonoBehaviour, IDropHandler, IPointerClickHandler
 {
+    #region Text
     public Text CurrentLetter;
-    public Text PointsText;
-    public string TempLetter;
-
-    //Is used to show points for single word in the end of turn
+    public Text PointsText;       
     public Text ScoreForWord;
-
+    #endregion
+    #region Bool_Variable
     public bool HasLetter;
     public bool CanDrop;
+    #endregion
+    #region INTEGER_VARIABLE
     public int Row;
     public int Column;
     public int LetterMultiplier = 1;
     public int WordMultiplier = 1;
+    #endregion
+
+    public string TempLetter;
 
     private FieldH parent;
 
@@ -33,15 +37,19 @@ public class TileH : MonoBehaviour, IDropHandler, IPointerClickHandler
         if (CanDrop && !HasLetter)
         {
             DragHandler.ObjectDragged.transform.position = new Vector3(-1500, -1500);//Prevents letter getting stuck on the field
+
             if (parent.CurrentDirection == FieldH.Direction.None ||
                 (parent.CurrentDirection == FieldH.Direction.Horizontal && Row == parent.CurrentTiles[0].Row) ||
                 (parent.CurrentDirection == FieldH.Direction.Vertical && Column == parent.CurrentTiles[0].Column))
             {
                 parent.CurrentTiles.Add(this);
+
                 if (parent.CurrentTiles.Count == 2)
                 {
-                    if (parent.CurrentTiles[0].Row == Row) parent.CurrentDirection = FieldH.Direction.Horizontal;
-                    else if (parent.CurrentTiles[0].Column == Column) parent.CurrentDirection = FieldH.Direction.Vertical;
+                    if (parent.CurrentTiles[0].Row == Row)
+                        parent.CurrentDirection = FieldH.Direction.Horizontal;
+                    else if (parent.CurrentTiles[0].Column == Column) 
+                        parent.CurrentDirection = FieldH.Direction.Vertical;
                     else
                     {
                         parent.Controller.ShowWrongTileError();
@@ -50,13 +58,25 @@ public class TileH : MonoBehaviour, IDropHandler, IPointerClickHandler
                     }
                 }
                 HasLetter = true;
+
                 CurrentLetter.text = DragHandler.ObjectDragged.GetComponent<LetterH>().LetterText.text;
-                var letterPanel = DragHandler.ObjectDragged.transform.parent.gameObject.GetComponent<LetterBoxH>();
+
+                LetterBoxH letterPanel = DragHandler.ObjectDragged.transform.parent.gameObject.GetComponent<LetterBoxH>();
+
                 letterPanel.RemoveLetter();
-                if (Column != 0) parent.Field[Row, Column - 1].CanDrop = true;
-                if (Column != parent.NumberOfColumns - 1) parent.Field[Row, Column + 1].CanDrop = true;
-                if (Row != 0) parent.Field[Row - 1, Column].CanDrop = true;
-                if (Row != parent.NumberOfRows - 1) parent.Field[Row + 1, Column].CanDrop = true;
+
+                if (Column != 0) 
+                    parent.Field[Row, Column - 1].CanDrop = true;
+
+                if (Column != parent.NumberOfColumns - 1) 
+                    parent.Field[Row, Column + 1].CanDrop = true;
+
+                if (Row != 0)
+                    parent.Field[Row - 1, Column].CanDrop = true;
+
+                if (Row != parent.NumberOfRows - 1)
+                    parent.Field[Row + 1, Column].CanDrop = true;
+
                 Destroy(DragHandler.ObjectDragged);
             }
             else parent.Controller.ShowWrongTileError();
@@ -94,7 +114,7 @@ public class TileH : MonoBehaviour, IDropHandler, IPointerClickHandler
         RemoveTile();
     }
 
-    //Removes letter from this TileH and returns it to hand of the player who droped it
+    //Removes letter from this TileH and returns it to hand of the player
     public void RemoveTile()
     {
         if ((parent.CurrentTiles.Count != 0 && parent.CurrentTiles[parent.CurrentTiles.Count - 1] != this) || parent.CurrentTiles.Count == 0)
@@ -102,22 +122,37 @@ public class TileH : MonoBehaviour, IDropHandler, IPointerClickHandler
             parent.Controller.ShowDeleteError();
             return;
         }
+
         HasLetter = false;
+
         if (parent.CurrentPlayer == 1)
             parent.Player.ChangeBox(1, CurrentLetter.text);
-       // else parent.Player2.ChangeBox(1, CurrentLetter.text);
+
         CurrentLetter.text = "";
+
         parent.CurrentTiles.Remove(this);
-        if (Row != 0) parent.Field[Row - 1, Column].CanDrop = CheckTile(parent.Field[Row - 1, Column]);
-        if (Row != parent.NumberOfRows - 1) parent.Field[Row + 1, Column].CanDrop = CheckTile(parent.Field[Row + 1, Column]);
-        if (Column != 0) parent.Field[Row, Column - 1].CanDrop = CheckTile(parent.Field[Row, Column - 1]);
-        if (Column != parent.NumberOfColumns - 1) parent.Field[Row, Column + 1].CanDrop = CheckTile(parent.Field[Row, Column + 1]);
+
+        if (Row != 0)
+            parent.Field[Row - 1, Column].CanDrop = CheckTile(parent.Field[Row - 1, Column]);
+
+        if (Row != parent.NumberOfRows - 1)
+            parent.Field[Row + 1, Column].CanDrop = CheckTile(parent.Field[Row + 1, Column]);
+
+        if (Column != 0)
+            parent.Field[Row, Column - 1].CanDrop = CheckTile(parent.Field[Row, Column - 1]);
+
+        if (Column != parent.NumberOfColumns - 1) 
+            parent.Field[Row, Column + 1].CanDrop = CheckTile(parent.Field[Row, Column + 1]);
+
         CanDrop = CheckTile(this);
+
         if (parent.CurrentTiles.Count == 1 || parent.CurrentTiles.Count == 0)
             parent.CurrentDirection = FieldH.Direction.None;
+
         if (parent.isFirstTurn)
         {
             parent.CurrentDirection = FieldH.Direction.None;
+
             if (parent.CurrentTurn == 1)
                 parent.Field[5, 5].CanDrop = true;
         }
@@ -141,7 +176,6 @@ public class TileH : MonoBehaviour, IDropHandler, IPointerClickHandler
             CurrentLetter.enabled = false;
         }
     }
-
     //Hides points and shows letter
     public void OnMouseExit()
     {
@@ -152,17 +186,18 @@ public class TileH : MonoBehaviour, IDropHandler, IPointerClickHandler
     //Visual effect for fading score for words in the end of turn
     private IEnumerator Fade()
     {
-        var c = ScoreForWord.color;
-        var f = 3f;
+        WaitForSeconds delay = new WaitForSeconds(0.1f);
+        Color c = ScoreForWord.color;
+        float f = 3f;
         for (; f >= 2; f -= 0.1f) //Show score for 1 second
         {
-            yield return new WaitForSeconds(.1f);
+            yield return delay;
         }
         for (; f > 0; f -= 0.1f) //Start slowly fading text
         {
             c.a = f * 0.5f;
             ScoreForWord.color = c;
-            yield return new WaitForSeconds(.1f);
+            yield return delay;
         }
         //Resets all the values
         c.a = 1;
